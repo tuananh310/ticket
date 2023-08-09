@@ -4,30 +4,30 @@ import { fetchWrapper } from '@/helpers';
 
 import router from '../router';
 
-const baseUrl = `${import.meta.env.API_URL}/users`;
-
+const baseUrl = `${import.meta.env.VITE_API_URL}`;
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
-        // initialize state from local storage to enable user to stay logged in
         user: JSON.parse(localStorage.getItem('user')),
+        token: JSON.parse(localStorage.getItem('token')),
         returnUrl: null
     }),
     actions: {
-        async login(username, password) {
-            const user = await fetchWrapper.post(`${baseUrl}/authenticate`, { username, password });
+        async login(email, password) {
+            const user = await fetchWrapper.post(`${baseUrl}/login`, { email, password });
 
-            // update pinia state
-            this.user = user;
+            this.token = user.token;
+            this.user = user.user;
 
-            // store user details and jwt in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('token', JSON.stringify(user.token));
+            localStorage.setItem('user', JSON.stringify(user.user));
 
-            // redirect to previous url or default to home page
-            router.push(this.returnUrl || '/');
+            router.push('/');
         },
         logout() {
             this.user = null;
+            this.token = null;
+            localStorage.removeItem('token');
             localStorage.removeItem('user');
             router.push('/login');
         }

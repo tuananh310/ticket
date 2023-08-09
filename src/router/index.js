@@ -1,29 +1,37 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 
-import { useAuthStore } from '@/stores';
-import { HomeView, LoginView } from '@/views';
+import { useAuthStore } from '@/stores'
+import { HomeView, LoginView, TicketView } from '@/views'
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    linkActiveClass: 'active',
-    routes: [
-        { path: '/', component: HomeView },
-        { path: '/login', component: LoginView }
-    ]
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  linkActiveClass: 'active',
+  routes: [
+    {
+      path: '/',
+      component: HomeView,
+      children: [
+        {
+          path: '/',
+          component: TicketView
+        },
+      ]
+    },
+    { path: '/login', component: LoginView }
+  ]
+})
 
 router.beforeEach(async (to) => {
-    // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/login'];
-    const authRequired = !publicPages.includes(to.path);
-    const auth = useAuthStore();
-    if (authRequired && !auth.user) {
-        auth.returnUrl = to.fullPath;
-        return '/login';
-    }
-    if(to.href == '/login' && auth.user){
-        return '/';
-    }
-});
+  const publicPages = ['/login']
+  const authRequired = !publicPages.includes(to.path)
+  const auth = useAuthStore()
+  // if (authRequired && !auth.user) {
+  //     auth.returnUrl = to.fullPath;
+  //     return '/login';
+  // }
+  if (to.href == '/login' && auth.token) {
+    return '/'
+  }
+})
 
-export default router;
+export default router

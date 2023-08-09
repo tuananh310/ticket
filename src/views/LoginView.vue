@@ -5,34 +5,33 @@ import * as Yup from 'yup'
 import { useAuthStore } from '@/stores'
 
 const schema = Yup.object().shape({
-  username: Yup.string().required('Username is required'),
+  email: Yup.string().required('Email is required'),
   password: Yup.string().required('Password is required')
 })
 
 function onSubmit(values, { setErrors }) {
   const authStore = useAuthStore()
-  const { username, password } = values
+  const { email, password } = values
 
-  return authStore.login(username, password).catch((error) => setErrors({ apiError: error }))
+  return authStore.login(email, password).catch((error) => setErrors({ apiError: error }))
 }
 </script>
 
 <template>
-  <el-row class="row-bg" justify="center">
+  <el-row class="row-bg" justify="center" style="margin-top: 5rem">
     <el-col :span="6">
       <el-card class="box-card">
-        <h2>Login</h2>
+        <h2>Đăng nhập</h2>
         <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
           <div class="form-group">
-            <label>Username</label>
-            <!-- <el-input name="username" type="text" placeholder="Username" /> -->
+            <label>Email</label>
             <Field
-              name="username"
+              name="email"
               type="text"
               class="form-control"
-              :class="{ 'is-invalid': errors.username }"
+              :class="{ 'is-invalid': errors.email }"
             />
-            <div class="invalid-feedback">{{ errors.username }}</div>
+            <div class="invalid-feedback">{{ errors.email }}</div>
           </div>
           <div class="form-group">
             <label>Password</label>
@@ -45,9 +44,9 @@ function onSubmit(values, { setErrors }) {
             <div class="invalid-feedback">{{ errors.password }}</div>
           </div>
           <div class="form-group">
-            <button class="btn btn-primary" :disabled="isSubmitting">
+            <button class="btn-submit" :disabled="isSubmitting">
               <span v-show="isSubmitting" class="spinner-border spinner-border-sm mr-1"></span>
-              Login
+              Đăng nhập
             </button>
           </div>
           <div v-if="errors.apiError" class="alert alert-danger mt-3 mb-0">
@@ -58,3 +57,21 @@ function onSubmit(values, { setErrors }) {
     </el-col>
   </el-row>
 </template>
+<style>
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+.form-control {
+  height: 1.5rem;
+  margin-top: 0.5rem;
+}
+.btn-submit{
+  background-color: #409eff;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 5px;
+}
+</style>
